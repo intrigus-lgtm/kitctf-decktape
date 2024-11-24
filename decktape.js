@@ -257,11 +257,45 @@ process.on('unhandledRejection', error => {
     // dumpio      : true,
     executablePath : options.chromePath,
     args           : options.chromeArgs,
+    browser        : "firefox",
   });
   const page = await browser.newPage();
   if (options.headers)
     page.setExtraHTTPHeaders(options.headers)
-  await page.emulateMediaType('screen');
+  // Replacement for `emulateMediaType('screen')`
+  await page.evaluateOnNewDocument(() => {
+    function adjustMediaQueries() {
+      const styleSheets = Array.from(document.styleSheets);
+
+      styleSheets.forEach(sheet => {
+        try {
+          const rules = Array.from(sheet.cssRules || sheet.rules || []);
+
+          rules.forEach((rule, index) => {
+            if (rule.media) {
+              const mediaText = rule.media.mediaText.toLowerCase();
+              if (mediaText.includes('print')) {
+                sheet.deleteRule(index);
+              } else if (mediaText.includes('screen')) {
+                const newRule = rule.cssText.replace(/screen/g, 'print');
+                sheet.deleteRule(index);
+                sheet.insertRule(newRule, index);
+              }
+            }
+          });
+        } catch (e) {
+          // Handle cross-origin stylesheet errors silently
+        }
+      });
+    }
+
+    // Run on load and after dynamic style changes
+    window.addEventListener('load', adjustMediaQueries);
+    new MutationObserver(adjustMediaQueries).observe(
+      document.documentElement,
+      { childList: true, subtree: true }
+    );
+  });
   const pdf = await PDFDocument.create();
   pdf.setCreator('Decktape');
   if (options.metaAuthor)
