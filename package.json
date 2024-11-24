@@ -1,14 +1,14 @@
 {
-  "name": "decktape",
+  "name": "kitctf-decktape",
   "description": "High-quality PDF exporter for HTML presentation frameworks",
   "author": "Antonin Stefanutti",
   "version": "3.14.0",
-  "homepage": "https://github.com/astefanutti/decktape",
+  "homepage": "https://github.com/kitctf/kitctf-decktape",
   "license": "MIT",
   "main": "decktape.js",
   "type": "module",
   "bin": {
-    "decktape": "decktape.js"
+    "kitctf-decktape": "decktape.js"
   },
   "scripts": {
     "start": "node decktape.js",
@@ -18,10 +18,10 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/astefanutti/decktape.git"
+    "url": "git+https://github.com/kitctf/kitctf-decktape.git"
   },
   "bugs": {
-    "url": "https://github.com/astefanutti/decktape/issues"
+    "url": "https://github.com/kitctf/kitctf-decktape/issues"
   },
   "dependencies": {
     "chalk": "5.3.0",
