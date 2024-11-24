@@ -14,7 +14,7 @@ import URI               from 'urijs';
 import util              from 'util';
 import { fileURLToPath } from 'url';
 
-import { PDFDocument, PDFName, ParseSpeeds, decodePDFRawStream } from 'pdf-lib';
+import { PDFDocument, PDFName, PDFRef, ParseSpeeds, decodePDFRawStream } from 'pdf-lib';
 
 import { delay, pause } from './libs/util.js';
 
@@ -447,7 +447,11 @@ async function printSlide(pdf, slide, context) {
   duplicatedEntries.forEach(ref => pdf.context.delete(ref));
 
   function parseResources(dictionary) {
-    const resources = dictionary.get(PDFName.Resources);
+    const resourcesOrRef = dictionary.get(PDFName.Resources);
+    const resources = resourcesOrRef instanceof PDFRef ? dictionary.context.indirectObjects.get(resourcesOrRef) : resourcesOrRef;
+    if (resources === undefined) {
+      throw new Error('Could not resolve PDFRef');
+    }
     if (resources.has(PDFName.XObject)) {
       const xObject = resources.get(PDFName.XObject);
       xObject.entries().forEach(entry => parseXObject(entry, xObject));
