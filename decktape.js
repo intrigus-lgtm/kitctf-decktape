@@ -329,7 +329,7 @@ process.on('unhandledRejection', error => {
       .catch(error => response.status() !== 200 ? Promise.reject(error) : response)
       .then(_ => response))
     // TODO: improve message when reading file locally
-    .then(response => console.log('Loading page finished with status: %s', response.status()))
+    .then(response => console.log('Loading page finished with status: %s', response !== null ? response.status() : "unknown status, reponse is null"))
     .then(delay(options.loadPause))
     .then(_ => createPlugin(page, plugins, options))
     .then(plugin => configurePlugin(plugin)
